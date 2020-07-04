@@ -34,7 +34,7 @@ for s, l in test_data:
 training_labels_final = np.array(training_labels)
 testing_labels_final = np.array(testing_labels)
 
-# Specify parameters
+# Specify hyper-parameters
 vocab_size = 10000
 embedding_size = 16
 max_length = 120
