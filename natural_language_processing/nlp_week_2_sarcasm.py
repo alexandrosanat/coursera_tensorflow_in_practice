@@ -4,6 +4,9 @@ from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 import os
 import matplotlib.pyplot as plt
+import numpy as np
+import io
+
 
 # Specify hyper-parameters
 vocab_size = 10000
@@ -49,6 +52,12 @@ training_padded = pad_sequences(training_sequences, maxlen=max_length, truncatin
 testing_sentences = tokenizer.texts_to_sequences(testing_sentences)
 testing_padded = pad_sequences(testing_sentences, maxlen=max_length, truncating=trunc_type)
 
+# Convert to numpy arrays
+training_padded = np.array(training_padded)
+training_labels = np.array(training_labels)
+testing_padded = np.array(testing_padded)
+testing_labels = np.array(testing_labels)
+
 # Define a Sequential Neural Network
 model = tf.keras.Sequential([
     tf.keras.layers.Embedding(vocab_size, embedding_size, input_length=max_length),
@@ -64,3 +73,42 @@ num_epochs = 30
 history = model.fit(training_padded, training_labels, epochs=num_epochs,
                     validation_data=(testing_padded, testing_labels), verbose=2)
 
+
+def plot_graphs(hist, string):
+    plt.cla()
+    plt.plot(hist.history[string])
+    plt.plot(hist.history['val_' + string])
+    plt.xlabel("Epochs")
+    plt.ylabel(string)
+    plt.legend([string, 'val_' + string])
+    plt.show()
+
+
+plot_graphs(history, "accuracy")
+plot_graphs(history, "loss")
+
+reverse_word_index = dict([(value, key) for (key, value) in word_index.items()])
+
+
+def decode_sentence(text):
+    return ' '.join([reverse_word_index.get(i, '?') for i in text])
+
+
+print(decode_sentence(training_padded[0]))
+print(training_sentences[2])
+print(labels[2])
+
+e = model.layers[0]
+weights = e.get_weights()[0]
+print(weights.shape)  # shape: (vocab_size, embedding_dim)
+
+
+out_v = io.open('vecs.tsv', 'w', encoding='utf-8')
+out_m = io.open('meta.tsv', 'w', encoding='utf-8')
+for word_num in range(1, vocab_size):
+    word = reverse_word_index[word_num]
+    embeddings = weights[word_num]
+    out_m.write(word + "\n")
+    out_v.write('\t'.join([str(x) for x in embeddings]) + "\n")
+out_v.close()
+out_m.close()
