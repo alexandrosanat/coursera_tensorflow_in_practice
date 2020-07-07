@@ -1,5 +1,6 @@
 import tensorflow as tf
 import tensorflow_datasets as tfds
+import matplotlib.pyplot as plt
 
 
 # Import IMDB dataset that has already been tokenised
@@ -44,3 +45,17 @@ model.compile(loss="binary_crossentropy",
               metrics=["accuracy"])
 
 history = model.fit(train_data, epochs=num_epochs, validation_data=test_data)
+
+
+# Plot results
+def plot_graphs(hist, string):
+    plt.plot(hist.history[string])
+    plt.plot(hist.history['val_' + string])
+    plt.xlabel("Epochs")
+    plt.ylabel(string)
+    plt.legend([string, 'val_' + string])
+    plt.show()
+
+
+plot_graphs(history, "accuracy")
+plot_graphs(history, "loss")
