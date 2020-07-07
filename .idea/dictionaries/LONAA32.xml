@@ -5,7 +5,10 @@
       <w>dataset</w>
       <w>imdb</w>
       <w>relu</w>
+      <w>subwords</w>
       <w>tfds</w>
+      <w>tokenised</w>
+      <w>tokeniser</w>
       <w>vecs</w>
     </words>
   </dictionary>
