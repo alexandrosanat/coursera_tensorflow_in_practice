@@ -46,6 +46,17 @@ model.add(Dense(total_words, activation='softmax'))
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 history = model.fit(xs, ys, epochs=500, verbose=1)
 
+# Alternative model
+model = Sequential()
+model.add(Embedding(total_words, 100, input_length=max_sequence_len-1))
+model.add(Bidirectional(LSTM(150)))
+model.add(Dense(total_words, activation='softmax'))
+adam = Adam(lr=0.01)
+model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
+# earlystop = EarlyStopping(monitor='val_loss', min_delta=0, patience=5, verbose=0, mode='auto')
+history = model.fit(xs, ys, epochs=100, verbose=1)
+print(model.summary())
+
 
 def plot_graphs(hist, string):
     plt.plot(hist.history[string])
